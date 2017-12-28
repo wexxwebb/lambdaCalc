@@ -75,27 +75,25 @@ public class Main {
 
     public static Integer enterNumber() {
 
-        Predicate<String> validator = (string) -> string.matches("\\b[0-9]+\\b");
-
-        Predicate<String> isExit = (string) -> string.intern() != null && string.intern() == "exit".intern();
-
-        Supplier exit = () -> {
-            System.out.println("Exit");
-            return null;
+        Function<String, Integer> exitOrRetry = (string) -> {
+            if (string.intern() == "exit") {
+                System.out.println("Exit");
+                return null;
+            } else {
+                System.out.println("Type number only, please. Type 'exit' to exit");
+                return enterNumber();
+            }
         };
 
-        Supplier retry = () -> {
-            System.out.println("Type number only, please. Type 'exit' to exit");
-            return enterNumber();
+        Function<String, Integer> getInt = (string) -> {
+            if (string.matches("\\b[0-9]+\\b")) {
+                return Integer.parseInt(string);
+            } else {
+                return exitOrRetry.apply(string);
+            }
         };
 
-        BiFunction<String, Predicate, Integer> exitOrRetry = (string, isexit) ->
-                isExit.test(string) ? (Integer) exit.get() : (Integer) retry.get();
-
-        BiFunction<String, Predicate, Integer> getInt =
-                (string, test) -> test.test(string) ? Integer.parseInt(string) : exitOrRetry.apply(string, isExit);
-
-        return getInt.apply(scanner.nextLine(), validator);
+        return getInt.apply(scanner.nextLine());
 
     }
 }
