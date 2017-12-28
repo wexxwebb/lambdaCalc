@@ -34,11 +34,11 @@ public class Main {
 
     }
 
-    public static BiFunction enterOperator() {
+    private static BiFunction enterOperator() {
 
         Predicate<String> validator = (string) -> string.matches("[+-/*]");
 
-        Predicate<String> isExit = (string) -> string.intern() != null && string.intern() == "exit".intern();
+        Predicate<String> isExit = (string) -> string.intern().equals("exit");
 
         Supplier exit = () -> {
             System.out.println("Exit");
@@ -51,13 +51,13 @@ public class Main {
         };
 
         Predicate<String> isSum = (string) ->
-                string.intern() == "+";
+                string.intern().equals("+");
 
         Predicate<String> isMul = (string) ->
-                string.intern() == "*";
+                string.intern().equals("*");
 
         Predicate<String> isDiv = (string) ->
-                string.intern() == "/";
+                string.intern().equals("/");
 
         BiFunction<String, Predicate, BiFunction> exitOrRetry = (string, isexit) ->
                 isExit.test(string) ? (BiFunction) exit.get() : (BiFunction) retry.get();
@@ -73,11 +73,11 @@ public class Main {
 
     }
 
-    public static Integer enterNumber() {
+    private static Integer enterNumber() {
 
         Predicate<String> validator = (string) -> string.matches("\\b[0-9]+\\b");
 
-        Predicate<String> isExit = (string) -> string.intern() != null && string.intern() == "exit".intern();
+        Predicate<String> isExit = (string) -> string.intern().equals("exit");
 
         Supplier exit = () -> {
             System.out.println("Exit");
@@ -90,7 +90,7 @@ public class Main {
         };
 
         BiFunction<String, Predicate, Integer> exitOrRetry = (string, isexit) ->
-                isExit.test(string) ? (Integer) exit.get() : (Integer) retry.get();
+                isexit.test(string) ? (Integer) exit.get() : (Integer) retry.get();
 
         BiFunction<String, Predicate, Integer> getInt =
                 (string, test) -> test.test(string) ? Integer.parseInt(string) : exitOrRetry.apply(string, isExit);
